@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>anna關注點分離</title>
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- bootstrap.bundle.min.js 用于弹窗、提示、下拉菜单，包含了 popper.min.js -->
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  </header>
+  <body>
+    <div id="app" class="container my-3">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">待辦事項</span>
+          <input type="text" class="form-control" placeholder="準備要做的任務" id="txtToDo">
+        </div>
+        
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button" id="btnAdd" >新增</button>
+        </div>
+      </div>
+      <div class="card text-center">
+        <ul class="list-group list-group-flush text-left" id="listToDo">
+        </ul>
+        <div class="card-footer d-flex justify-content-between">
+          <span>還有 <span id="cntToDo">0</span> 筆任務</span>
+          <a href="#" id="btnClear">清除所有任務</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+
+<style>
+    .completed {
+  text-decoration: line-through
+}
+</style>
+<script>
+var btnAdd = document.getElementById('btnAdd');
+var btnClear = document.getElementById('btnClear');
+var btnList = document.getElementById('listToDo');
+var onlineData = [];
+
+btnAdd.addEventListener('click',function(){
+  addData();
+  createHtml();
+});
+btnClear.addEventListener('click',function(e){
+  e.preventDefault();
+  onlineData = [];
+  createHtml();
+});
+btnList.addEventListener('click',function(e){
+  var _type = e.target.dataset.type;
+  var _id = e.target.dataset.id;
+  onlineData.forEach(function(item,idx){
+    if(item.id == _id)
+    {
+      switch (_type) 
+      {
+        case "delete":
+        onlineData.splice(idx,1);        
+        break;
+
+        case "finish":
+        if (item.checked) 
+          item.checked = false;
+        else 
+          item.checked = true;        
+        break;
+      }
+      createHtml();
+    }
+  });
+});
+
+function addData()
+{
+  var txtToDo = document.getElementById('txtToDo');
+  if(txtToDo.value.trim() != '')
+  {
+    onlineData.push({
+      id: getUUID(),
+      value: txtToDo.value,
+      checked: false
+    });
+  }
+  txtToDo.value = '';
+}
+function getUUID() {
+  var d = Date.now();
+  if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+    d += performance.now(); //use high-precision timer if available
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (d + Math.random() * 16) % 16 | 0;
+    d = Math.floor(d / 16);
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+function createHtml()
+{
+  var strHTML = '';
+  var count = 0;
+  onlineData.forEach(function(item,idx){
+    strHTML +=  `<li class="list-group-item">
+    <div class="d-flex">
+    <div class="form-check">
+    <input type="checkbox" class="form-check-input" ${item.checked ? 'checked' : ''} data-type="finish" data-id="${item.id}">
+    <label class="form-check-label ${item.checked ? 'completed' : ''}" data-type="finish" data-id="${item.id}"> ${item.value}</label>
+    </div>
+    <button type="button" class="close ml-auto" aria-label="Close">
+    <span aria-hidden="true" data-type="delete" data-id="${item.id}">&times;</span>
+    </button>
+    </div>
+    </li>`;
+    if(item.checked == false)
+      count++;
+  });
+  document.getElementById('listToDo').innerHTML = strHTML;
+  document.getElementById('cntToDo').textContent = count;
+}
+
+
+</script>
