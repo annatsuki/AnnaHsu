@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <header>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>anna取得產品列表</title>
+    <!-- 新 Bootstrap4 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- bootstrap.bundle.min.js 用于弹窗、提示、下拉菜单，包含了 popper.min.js -->
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!--API-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+  </header>
+  <body>
+    <div class="container">
+      <h2>anna產品列表</h2>
+      <div id="app" class="card-columns">
+      </div>
+    </div>
+  </body>
+</html>
+
+
+
+<script>
+var apiUUID = 'dd78fffc-469d-466b-8991-547637f6ec32';
+var apiUrl = 'https://course-ec-api.hexschool.io';
+
+var apiProduct = {
+  url: '',
+  result: [],
+  html: '',
+  getProduct(){
+    var vm = this;
+    vm.url = `${apiUrl}/api/${apiUUID}/ec/products`;
+    //console.log(this.url);
+    
+    axios.get(vm.url)
+    .then(function(res)
+    {
+      vm.result = res.data.data;
+      vm.createHtml();
+      //console.log(vm);
+    });
+  },
+  createHtml()
+  {
+    var vm = this;   
+    var app = document.getElementById('app'); 
+    this.result.forEach((item)=>{
+      vm.html += `
+      <div class="card">
+      <img src="${ item.imageUrl[0] }" class="card-img-top">
+      <div class="card-body">
+      <h5 class="card-title">${ item.title }</h5>
+      <p class="card-text">${ item.content }</p>
+      </div>
+      </div>
+      `;
+    });
+    app.innerHTML = vm.html;
+  }
+}
+
+apiProduct.getProduct();
+
+</script>
