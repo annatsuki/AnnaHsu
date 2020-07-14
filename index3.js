@@ -68,9 +68,10 @@ function Update()
     if(app.currProduct.id){
         const _id = app.currProduct.id;
         app.myProducts.forEach((item,i)=>{
-            if(item.id === _id)
+            if(item.id === _id){
             app.myProducts[i] = app.currProduct;
             console.log("test="+app.myProducts[i].origin_price);
+            }
         });
     }
     else{
@@ -78,7 +79,7 @@ function Update()
         app.currProduct.id = _id;
         app.myProducts.push(app.currProduct);
     }
-    app.tempProduct = {};
+    app.currProduct = {};
     $('#productModal').modal('hide');
 }
 function Delete()
