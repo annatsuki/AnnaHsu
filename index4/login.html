@@ -32,23 +32,23 @@
 
   <body>
 
-    <div id="app">
+    <div id="applogin">
       <div class="container">
-        <form class="form-signin" @submit.prevent="login">
+        <form class="form-signin">
           <h1 class="h3 mb-3 font-weight-normal">
-            請先登入
+            Welcome 請先登入
           </h1>
           <div class="form-group">
             <label for="inputEmail" class="sr-only">Email address</label>
-            <input id="inputEmail" v-model="user.email" type="email" class="form-control" placeholder="Email address"
+            <input v-model="logindata.email" id="inputEmail" type="email" class="form-control" placeholder="Email address"
               required autofocus>
           </div>
           <div class="form-group">
             <label for="inputPassword" class="sr-only">Password</label>
-            <input id="inputPassword" v-model="user.password" type="password" class="form-control"
+            <input v-model="logindata.password" id="inputPassword" type="password" class="form-control"
               placeholder="Password" required>
           </div>
-          <button class="btn btn-lg btn-primary btn-block" type="submit" >
+          <button @click.prevent="login" class="btn btn-lg btn-primary btn-block" >
             登入
           </button>
           <p class="mt-5 mb-3 text-muted">
@@ -70,35 +70,38 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
     <script>
-    new Vue({
-        el: '#app',
-        data: {
-          user: {
-            email: '',
-            password: '',
-          },
+      const apiUrl = `https://course-ec-api.hexschool.io/api/auth/login`;
+
+      new Vue({
+        el:'#applogin',
+        data:{
+          logindata:{
+            email:'sstsuki@gmail.com',
+            password:'Tsuki-1106!',
+          }
         },
-        methods: {
-          /**
-           * 登入
-           * 執行登入 AJAX 後會將 token 與 expired 儲存並寫入 cookie 中，寫入完畢後在跳轉到產品頁面。
-           */
-           login() {
-            const api = `https://course-ec-api.hexschool.io/api/auth/login`;
-            axios.post(api, this.user).then((resp) => {
-              //console.log("resp="+resp.data);
-              const token = resp.data.token;
-              const expired = resp.data.expired;
-              // 寫入 cookie token
-              // expires 設置有效時間
-              document.cookie = `token=${token};expires=${new Date(expired * 1000)}; path=/`;
-              window.location = 'index.html';
+        methods:{
+          login(){
+            //console.log("login");
+            axios.post(apiUrl, this.logindata).then((resp)=>{
+              if(resp.data.success)
+              {
+                const uuid = resp.data.uuid;
+                const token = resp.data.token;
+                const expires = new Date(resp.data.expires * 1000);                
+                document.cookie = `token=${token};expires=${expires}; path=/`;
+                console.log(document.cookie);
+                document.cookie = `annauuid=${uuid}`;
+                window.location = 'index.html';
+              }
+              else{
+                alert(`錯誤：${resp.data.message}`);
+              }
             }).catch((error) => {
-              //console.log("login error=" + error);
-              alert("登入錯誤");
+              alert(`系統錯誤：${error}`);
             });
-          }//End signin()
-        }//End methods
+          }
+        }
       })
     </script>
   </body>
