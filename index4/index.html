@@ -64,8 +64,10 @@
           </tr>
         </tbody>
       </table>
-      
 
+      <pagination :my-pages="myPagination" @emit-pages="getProducts"></pagination>
+      
+      
      
     </div>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -81,8 +83,8 @@
       </script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <!-- 分頁元件建立 
-    <script src="pagination.js"></script>-->
+    <!-- 分頁元件建立 -->
+    <script src="pagination.js"></script>
     <!-- 主要 JS -->
     <script src="index.js"></script>
 
