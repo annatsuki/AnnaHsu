@@ -1,4 +1,3 @@
-const apiUrl= "https://course-ec-api.hexschool.io/api";
 
 new Vue({
   el:'#appproduct',
@@ -7,7 +6,7 @@ new Vue({
     myProducts:'',
     myPagination:'',
     currProduct:{
-      imgUrl:[],
+      imageUrl:[],
     },
     status:{
       isNew:false,
@@ -41,9 +40,33 @@ new Vue({
         this.myProducts = resp.data.data;
         this.myPagination = resp.data.meta.pagination;
       })
-
     },
-  }  
+    openModal(isNew, item){
+      console.log(`isNew=${isNew}`);
+      switch (isNew) {
+        case 'new':
+          this.$refs.productModel.currProduct = {
+            imageUrl: [],
+          };
+          this.status.isNew = true;
+          $('#productModal').modal('show');
+          break;
+        case 'edit':
+          console.log(`item=${item}`);
+          this.currProduct = Object.assign({}, item);
+          // 使用 refs 觸發子元件方法
+          this.$refs.productModel.getProduct(this.currProduct.id);
+          this.status.isNew = false;
+          break;
+        case 'delete':
+          this.currProduct = Object.assign({}, item);
+          $('#delProductModal').modal('show');
+          break;
+        default:
+          break;
+      }
+    },  
+  }
 })
 
 //取cookies函式  

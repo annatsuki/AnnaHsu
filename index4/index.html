@@ -12,7 +12,7 @@
   <body>
     <div id="appproduct" class="container">
       <div class="text-right mt-4">
-        <button class="btn btn-primary">
+        <button @click="openModal('new', item)" class="btn btn-primary">
           建立新的產品
         </button>
       </div>
@@ -53,10 +53,10 @@
             </td>
             <td>
               <div class="btn-group">
-                <button class="btn btn-outline-primary btn-sm">
+                <button @click="openModal('edit', item)" class="btn btn-outline-primary btn-sm">
                   編輯
                 </button>
-                <button class="btn btn-outline-danger btn-sm">
+                <button @click="openModal('delete', item)" class="btn btn-outline-danger btn-sm">
                   刪除
                 </button>
               </div>
@@ -67,7 +67,10 @@
 
       <pagination :my-pages="myPagination" @emit-pages="getProducts"></pagination>
       
-      
+      <!-- Modal -->
+      <product-modal ref="productModel" :status="status" :user="user" @update="getProducts"></product-modal>
+      <del-product-modal :curr-product="currProduct" :user="user" @update="getProducts"></del-product-modal>
+
      
     </div>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -85,6 +88,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- 分頁元件建立 -->
     <script src="pagination.js"></script>
+    <!-- modal元件建立 -->
+    <script src="productModal.js"></script>
+    <script src="delProductModal.js"></script>
     <!-- 主要 JS -->
     <script src="index.js"></script>
 

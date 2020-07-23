@@ -1,3 +1,5 @@
+const apiUrl= "https://course-ec-api.hexschool.io/api";
+
 Vue.component('pagination', {
     // 分頁模板
     template: `<nav aria-label="Page navigation example">
