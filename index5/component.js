@@ -64,24 +64,118 @@ Vue.component('comp-pagination', {
       return{
         buyCar:{},
         buyAMT: 0,
+        buyCount: 0,
+        isbuy:false,
       };
     },
     props:{
       puser:{},
     },
     methods:{
-      getBuyList(){
+      getBuyList(IsShow){
+        this.buyAMT = 0;
         const url = `${this.puser.url}/${this.puser.uuid}/ec/shopping`;
 
         axios.get(url).then((resp) => {
           this.buyCar = resp.data.data;
           // 累加總金額
           this.buyCar.forEach((item) => {
-            this.buyAMT += item.product.price;
+            console.log(`${item.product.title}==price==${item.product.price }==quantity==${item.quantity }`);
+            
+            var amt = item.product.price * item.quantity;
+            this.buyAMT += amt;
+            this.buyCount += item.quantity;
           }); 
-          $('#BuyCarModal').modal('show');     
+          this.$emit('ecount', this.buyCount); 
+          console.log(`==this.buyCount==${this.buyCount}`);
+
+          if(IsShow != 'none')
+            $('#BuyCarModal').modal('show');  
+          
+          this.isbuy = this.buyAMT > 0 ? true : false;
+          console.log(`==this.isbuy==${this.isbuy}`);
         });
+      },
+      removeAllCartItem() {
+        const url = `${this.puser.url}/${this.puser.uuid}/ec/shopping/all/product`;
+  
+        axios.delete(url)
+          .then(() => {
+            this.buyCar = {};
+            this.buyAMT = 0;
+            this.isbuy = this.buyAMT > 0 ? true : false;
+          });
+      },
+      removeCartItem(id) {
+        const url = `${this.puser.url}/${this.puser.uuid}/ec/shopping/${id}`;
+  
+        axios.delete(url).then(() => {
+          this.getBuyList();
+        });
+      },
+      quantityUpdata(id, num) {
+        // 避免商品數量低於 0 個
+        if(num <= 0) return;
+
+        const url = `${this.puser.url}/${this.puser.uuid}/ec/shopping`;  
+        const data = {
+          product: id,
+          quantity: num,
+        };
+  
+        axios.patch(url, data).then(() => {
+          this.getBuyList();
+        });
+      },
+      openPayForm()
+      {
+        this.$emit('eform', 'open'); 
+        //$('#BuyCarModal').modal('hide');
+        //this.$refs.formDetail.createform(); 
+      },
+      closeBuyList(){
+        $('#BuyCarModal').modal('hide');
       },
     },
   });
   //======== 購物車元件 End ==========
+
+  //======== 付款表單元件 ==========
+  Vue.component('comp-form',{
+    template:'#templatePayForm',
+    data(){
+      return{
+        form: {
+          name: '',
+          email: '',
+          tel: '',
+          address: '',
+          payment: '',
+          message: '',
+        },
+      };
+    },
+    props:{
+      puser:{},
+    },
+    methods:{
+      createform(){
+        $('#PayFormModal').modal('show');
+      },
+      addOrderForm() {
+        const url = `${this.puser.url}/${this.puser.uuid}/ec/orders`;
+  
+        axios.post(url, this.form).then((resp) => {
+          if (resp.data.data.id) {
+            // 跳出提示訊息
+            alert("恭喜你已完成訂單!!");
+            $('#PayFormModal').modal('hide');
+          }
+        }).catch((error) => {
+          alert(error.response.data.errors);
+          console.log(error.response.data.errors);
+        });
+      },
+    },
+  });
+  //======== 付款表單元件 End ==========
